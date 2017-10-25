@@ -27,6 +27,7 @@ tabletSignInRoutes = require('./routes/cubeAppSignInRouter');
 
 mongoose.connect(db_server);
 mongoose.connection.on('connected',function(ref){
+    console.log(ref);
     console.log("Connected to " + db_server + " DB!")
 });
 mongoose.connection.on('error',function(err){
