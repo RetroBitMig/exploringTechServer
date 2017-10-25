@@ -21,8 +21,8 @@ var s3 = new AWS.S3();
 
 // AWS
 AWS.config = new AWS.Config();
-AWS.config.accessKeyId = process.env.accessKeyId;
-AWS.config.secretAccessKey = process.env.secretAccessKey;
+AWS.config.accessKeyId = process.env.Access_Key_Id;
+AWS.config.secretAccessKey = process.env.Secret_Access_Key;
 
 // save app data name-email-etc
 router.post("/saveApp", function (req, res) {
