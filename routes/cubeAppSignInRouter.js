@@ -28,6 +28,7 @@ router.post("/signIn", function (req, res) {
 // add sign out date to login record
 router.post("/signOut", function (req, res) {
     var key = req.body.key;
+    console.log(key)
     var date = new Date();
     App.findOneAndUpdate({
         key: key

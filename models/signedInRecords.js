@@ -9,7 +9,7 @@ var signedInSchema = new Schema({
     first_name: { type: String, required:true},
     last_name: { type: String, required:true},
     key: { type: String, required: true},
-    sign_out_date: { type: Date},
+    sign_out_date: { type: Date, default: null},
     sign_in_date: { type: Date, default: Date.now , required:true}
 },
 {

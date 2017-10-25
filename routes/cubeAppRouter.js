@@ -11,19 +11,13 @@ var multer = require('multer');
 var upload = multer();
 var fs = require('fs');
 
+// DROPBOX SDK
+var Dropbox = require('dropbox');
+var dbx = new Dropbox({ accessToken: process.env.DROPBOX_KEY });
 
-// Load the SDK and UUID
-var AWS = require('aws-sdk');
-var uuid = require('uuid');
 
-// Create an S3 client
-var s3 = new AWS.S3();
 
-// AWS
-AWS.config = new AWS.Config();
-AWS.config.accessKeyId = process.env.Access_Key_Id;
-AWS.config.secretAccessKey = process.env.Secret_Access_Key;
-
+    
 // save app data name-email-etc
 router.post("/saveApp", function (req, res) {
     var app = new App(req.body);
@@ -46,20 +40,28 @@ router.post("/uploadProfilePic", upload.single('pic'), function (req, res) {
         return res.status(403).send('Expected image file').end();
     }
     var file = req.file;
-    var params = {
-        ACL: 'public-read',
-        Bucket: 'txtcubeapp',
-        Key: file.originalname,
-        Body: file.buffer
-    }
-    s3.upload(params, function (err, data) {
-        if (err) {
-            res.status(500).send({
-                error: err
-            });
-        } else {
-            res.status(200).send(data.Location);
-        }
+    var path = '/cubeAppPictures/' + file.originalname;
+    dbx.filesUpload({ path: path, contents:file.buffer, autorename: true})
+    .then( response => {
+        dbx.sharingCreateSharedLink({ path: path })
+            .then( response => {
+                console.log(response);
+                res.status(200).json({
+                    data: response.url
+                });
+            })
+            .catch( err => {
+                console.log(err);
+                res.status(500).send({
+                    error: err
+                });
+            })
+    })
+    .catch( err => {
+        console.log(err);
+        res.status(500).send({
+            error: err
+        });
     })
 })
 // change user to signed in true
