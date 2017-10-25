@@ -11,7 +11,7 @@ cors = require('cors'),
 db_server = process.env.MONOGO_DB_URL,
 port = process.env.PORT || 3000;
 
-console.log(process.env);
+
 
 // routes
 var volunteerRoutes = require('./routes/volunteerRouter'),
