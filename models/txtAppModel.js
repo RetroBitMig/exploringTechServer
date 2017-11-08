@@ -1,5 +1,5 @@
 'use strict'
-
+// HACKATHON MOBILE APP
 var validator = require('validator');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
@@ -15,12 +15,14 @@ var appSchema = new Schema({
     phone_number: { type: Number, required: true},
     school: { type: String, required:true},
     ethnicity: { type: String, required: true},
+    computers: { type: String, required: true},
+    wifi: { type: String, required: true},
     key: { type: String, required: true},
     uploaded: { type: Boolean, required: true},
     date: { type: Date, default: Date.now , required:true}
 },
 {
-    collection: 'exploringTechApp'
+    collection: 'exploringTechHackathonApp'
 }
 );
 

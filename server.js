@@ -4,7 +4,7 @@ require('dotenv').load();
 var express = require('express'),
 app = express(),
 mongoose = require('mongoose'),
-expressSanitizer = require('express-sanitizer');
+expressSanitizer = require('express-sanitizer'),
 bodyParser = require('body-parser'),
 cors = require('cors'),
 // db_server = process.env.DB_ENV || 'mongodb://localhost:27017/exploringTech',
@@ -24,6 +24,7 @@ commentRoutes = require('./routes/commentsRouter');
 cubeAppRoutes = require('./routes/cubeAppRouter');
 testRoutes = require('./routes/test');
 tabletSignInRoutes = require('./routes/cubeAppSignInRouter');
+txtPortalRoutes = require('./routes/txtPortalRouter');
 
 mongoose.connect(db_server);
 mongoose.connection.on('connected',function(ref){
@@ -50,6 +51,8 @@ app.use('/app', appRoutes);
 app.use('/cubeApp', cubeAppRoutes);
 app.use('/test', testRoutes);
 app.use('/signIn', tabletSignInRoutes);
+app.use('/txtportal', txtPortalRoutes);
+
 
 app.listen(port, function() {
     console.log('listening on port ' + port);

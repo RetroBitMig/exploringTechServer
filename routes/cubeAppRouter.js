@@ -153,4 +153,8 @@ router.get("/findSignedIn", function (req, res) {
     })
 })
 
+router.get('/test', function(req,res){
+    console.log(req.body);
+
+})
 module.exports = router;
