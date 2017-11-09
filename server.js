@@ -7,8 +7,9 @@ mongoose = require('mongoose'),
 expressSanitizer = require('express-sanitizer');
 bodyParser = require('body-parser'),
 cors = require('cors'),
-// db_server = process.env.DB_ENV || 'mongodb://localhost:27017/exploringTech',
-db_server = process.env.MONOGO_DB_URL,
+request = require('request'),
+db_server = process.env.DB_ENV || 'mongodb://localhost:27017/exploringTech',
+// db_server = process.env.MONOGO_DB_URL,
 port = process.env.PORT || 3000;
 
 
@@ -50,6 +51,70 @@ app.use('/app', appRoutes);
 app.use('/cubeApp', cubeAppRoutes);
 app.use('/test', testRoutes);
 app.use('/signIn', tabletSignInRoutes);
+
+// testing out slack api built in to this
+
+// grabs Slack network information to add bot
+app.get('/slack', function(req, res){
+    if (!req.query.code) { // access denied
+      res.redirect('http://mijii.me/party/');
+      return;
+    }
+    var data = {form: {
+        client_id: process.env.SLACK_CLIENT_ID,
+        client_secret: process.env.SLACK_CLIENT_SECRET,
+        code: req.query.code
+    }};
+    request.post('https://slack.com/api/oauth.access', data, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        // Get an auth token
+        let token = JSON.parse(body).access_token;
+  
+        // Get the team domain name to redirect to the team URL after auth
+        request.post('https://slack.com/api/team.info', {form: {token: token}}, function (error, response, body) {
+          if (!error && response.statusCode == 200) {
+            if(JSON.parse(body).error == 'missing_scope') {
+              res.send('BananaCSV has been added to your team!');
+            } else {
+              let team = JSON.parse(body).team.domain;
+              res.redirect('http://' +team+ '.slack.com');
+            }
+          }
+        });
+      }
+    })
+});
+
+// run the code for the slash command
+function handleQueries(q, req, res) {
+    if(q.token !== process.env.SLACK_VERIFICATION_TOKEN) {
+      // the request is NOT coming from Slack!
+      return;
+    }
+    let code = 'creed'; // if command is '/csv creed' run the rest of the code
+    if (code) {
+      if(!code) {
+        res.send('Bummer, ' + q.text + ' is not an official HTTP status code 🙃'); // if command is not '/csv creed' run this error
+        return;
+      }
+  
+      let data = {
+        response_type: 'in_channel', // public to the channel
+        text: code + ': ' + status
+      };
+      res.json(data);
+    } else {
+      let data = {
+        response_type: 'ephemeral', // private message
+        text: 'How to use /csv command:',
+        attachments:[
+        {
+          text: 'Type `/csv <code>` to grab an Excel sheet of the recruitment apps.'
+        }
+      ]};
+      res.json(data);
+    }
+  }
 
 app.listen(port, function() {
     console.log('listening on port ' + port);
